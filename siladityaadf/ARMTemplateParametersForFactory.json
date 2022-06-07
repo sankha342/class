@@ -11,10 +11,19 @@
 		"AzureDataLakeStorage2_accountKey": {
 			"value": ""
 		},
+		"AzureDataLakeStorage3_accountKey": {
+			"value": ""
+		},
+		"linkedService1_connectionString": {
+			"value": ""
+		},
 		"AzureDataLakeStorage1_properties_typeProperties_url": {
 			"value": "https://siladityasg.dfs.core.windows.net"
 		},
 		"AzureDataLakeStorage2_properties_typeProperties_url": {
+			"value": "https://siladityasg.dfs.core.windows.net"
+		},
+		"AzureDataLakeStorage3_properties_typeProperties_url": {
 			"value": "https://siladityasg.dfs.core.windows.net"
 		}
 	}
