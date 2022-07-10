@@ -89,6 +89,26 @@
 					"referenceName": "AzureDatabricks2",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "batch_process",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "status",
+					"value": {
+						"value": "@activity('batch_process').output.runOutput",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"parameters": {
@@ -107,6 +127,10 @@
 			"stream_table": {
 				"type": "string",
 				"defaultValue": "StreamTB"
+			},
+			"checkpointing_path": {
+				"type": "string",
+				"defaultValue": "abfss://data@siladityasg.dfs.core.windows.net/checkpointing"
 			}
 		},
 		"variables": {
