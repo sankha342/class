@@ -14,6 +14,12 @@
 		"AzureDataLakeStorage3_accountKey": {
 			"value": ""
 		},
+		"AzureDatabricks1_accessToken": {
+			"value": ""
+		},
+		"AzureDatabricks2_accessToken": {
+			"value": ""
+		},
 		"AzureDataLakeStorage1_properties_typeProperties_url": {
 			"value": "https://siladityasg.dfs.core.windows.net/"
 		},

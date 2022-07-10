@@ -19,6 +19,14 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage3'"
 		},
+		"AzureDatabricks1_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks1'"
+		},
+		"AzureDatabricks2_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks2'"
+		},
 		"AzureDataLakeStorage1_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://siladityasg.dfs.core.windows.net/"
@@ -43,7 +51,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Data flow1",
+						"name": "joining and single file",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
@@ -72,11 +80,117 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "batch_process",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "joining and single file",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/deyshiladitya1991@gmail.com/batch_processing",
+							"baseParameters": {
+								"input_path": {
+									"value": "@pipeline().parameters.output_path",
+									"type": "Expression"
+								},
+								"tmpdir": {
+									"value": "@pipeline().parameters.tmp_dir",
+									"type": "Expression"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "stream_process",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "batch_process",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/deyshiladitya1991@gmail.com/stream_process"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks2",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "batch_process",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "status",
+							"value": {
+								"value": "@activity('batch_process').output.runOutput",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"parameters": {
+					"output_path": {
+						"type": "string",
+						"defaultValue": "abfss://data@siladityasg.dfs.core.windows.net/output"
+					},
+					"tmp_dir": {
+						"type": "string",
+						"defaultValue": "abfss://data@siladityasg.dfs.core.windows.net/input/tmpdir"
+					},
+					"batch_table": {
+						"type": "string",
+						"defaultValue": "BatchTB"
+					},
+					"stream_table": {
+						"type": "string",
+						"defaultValue": "StreamTB"
+					},
+					"checkpointing_path": {
+						"type": "string",
+						"defaultValue": "abfss://data@siladityasg.dfs.core.windows.net/checkpointing"
+					}
 				},
 				"variables": {
 					"status": {
@@ -86,7 +200,9 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dataflow1')]"
+				"[concat(variables('factoryId'), '/dataflows/dataflow1')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricks1')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricks2')]"
 			]
 		},
 		{
@@ -375,6 +491,42 @@
 						"type": "SecureString",
 						"value": "[parameters('AzureDataLakeStorage3_accountKey')]"
 					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricks1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-6790788088217659.19.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDatabricks1_accessToken')]"
+					},
+					"existingClusterId": "0710-143214-dy6vc1yq"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricks2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-6790788088217659.19.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDatabricks2_accessToken')]"
+					},
+					"existingClusterId": "0710-143214-dy6vc1yq"
 				}
 			},
 			"dependsOn": []
