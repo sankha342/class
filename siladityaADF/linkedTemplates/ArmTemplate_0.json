@@ -466,6 +466,7 @@
 						"select1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     partitionFileNames:['output.csv'],",
+						"     truncate: true,",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
@@ -547,6 +548,10 @@
 								"tmpdir": {
 									"value": "@pipeline().parameters.tmp_dir",
 									"type": "Expression"
+								},
+								"batch_table": {
+									"value": "@pipeline().parameters.batch_table",
+									"type": "Expression"
 								}
 							}
 						},
@@ -575,7 +580,21 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"notebookPath": "/Users/deyshiladitya1991@gmail.com/stream_process"
+							"notebookPath": "/Users/deyshiladitya1991@gmail.com/stream_process",
+							"baseParameters": {
+								"stream_table": {
+									"value": "@pipeline().parameters.stream_table",
+									"type": "Expression"
+								},
+								"tmpdir": {
+									"value": "@pipeline().parameters.tmp_dir",
+									"type": "Expression"
+								},
+								"checkpointing_path": {
+									"value": "@pipeline().parameters.checkpointing_path",
+									"type": "Expression"
+								}
+							}
 						},
 						"linkedServiceName": {
 							"referenceName": "AzureDatabricks2",
