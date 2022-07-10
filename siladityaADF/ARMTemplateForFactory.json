@@ -146,7 +146,7 @@
 						}
 					},
 					{
-						"name": "Set variable1",
+						"name": "StatusSet",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
@@ -170,7 +170,7 @@
 						"type": "WebActivity",
 						"dependsOn": [
 							{
-								"activity": "Set variable1",
+								"activity": "StatusSet",
 								"dependencyConditions": [
 									"Succeeded"
 								]
