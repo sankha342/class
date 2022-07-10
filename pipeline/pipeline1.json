@@ -109,6 +109,37 @@
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "EmailTrigger",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Set variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@pipeline().parameters.logicApp_url",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"body": {
+						"value": "{\n    \"message\" : \"This is a custom dynamic message from your pipeline with run ID @{pipeline().RunId}.\",\n    \"dataFactoryName\" : \"@{pipeline().DataFactory}\", \n    \"pipelineName\" : \"@{pipeline().Pipeline}\", \n    \"receiver\" : \"@{pipeline().parameters.receiver}\"\n   }",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"parameters": {
@@ -131,6 +162,14 @@
 			"checkpointing_path": {
 				"type": "string",
 				"defaultValue": "abfss://data@siladityasg.dfs.core.windows.net/checkpointing"
+			},
+			"logicApp_url": {
+				"type": "string",
+				"defaultValue": "https://prod-24.eastus2.logic.azure.com:443/workflows/a943b34ac56947f3a7ab7e538565e043/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=bpMjnjihvGBkNYzoWFoKt7AeGYDRaegb7ahpTUnmeWE"
+			},
+			"receiver": {
+				"type": "string",
+				"defaultValue": "deyshiladitya1991@gmail.com"
 			}
 		},
 		"variables": {
