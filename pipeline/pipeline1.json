@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Data flow1",
+				"name": "joining and single file",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -25,6 +25,70 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "batch_process",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "joining and single file",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/deyshiladitya1991@gmail.com/batch_processing",
+					"baseParameters": {
+						"input_path": {
+							"value": "@pipeline().parameters.output_path",
+							"type": "Expression"
+						},
+						"tmpdir": {
+							"value": "@pipeline().parameters.tmp_dir",
+							"type": "Expression"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks1",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "stream_process",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "batch_process",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/deyshiladitya1991@gmail.com/stream_process"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks2",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"parameters": {
@@ -35,6 +99,14 @@
 			"tmp_dir": {
 				"type": "string",
 				"defaultValue": "abfss://data@siladityasg.dfs.core.windows.net/input/tmpdir"
+			},
+			"batch_table": {
+				"type": "string",
+				"defaultValue": "BatchTB"
+			},
+			"stream_table": {
+				"type": "string",
+				"defaultValue": "StreamTB"
 			}
 		},
 		"variables": {
