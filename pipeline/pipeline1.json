@@ -27,6 +27,16 @@
 				}
 			}
 		],
+		"parameters": {
+			"output_path": {
+				"type": "string",
+				"defaultValue": "abfss://data@siladityasg.dfs.core.windows.net/output"
+			},
+			"tmp_dir": {
+				"type": "string",
+				"defaultValue": "abfss://data@siladityasg.dfs.core.windows.net/input/tmpdir"
+			}
+		},
 		"variables": {
 			"status": {
 				"type": "String"
